@@ -17,8 +17,6 @@ public class SpringDocConfig {
                         .title("Ensiklopedia Ulos DiTenun")
                         .version("1.0.0")
                         .description("API Documentation for Ensiklopedia Ulos DiTenun"));
-
-
     }
 
 }
