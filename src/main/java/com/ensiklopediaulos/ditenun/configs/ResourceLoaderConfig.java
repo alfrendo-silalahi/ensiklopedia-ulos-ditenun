@@ -1,4 +1,4 @@
-package com.ensiklopediaulos.ditenun.config;
+package com.ensiklopediaulos.ditenun.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

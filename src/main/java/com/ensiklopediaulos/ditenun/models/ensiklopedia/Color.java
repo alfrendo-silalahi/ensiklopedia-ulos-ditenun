@@ -1,9 +1,13 @@
-package com.ensiklopediaulos.ditenun.model.ensiklopedia;
+package com.ensiklopediaulos.ditenun.models.ensiklopedia;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -11,8 +15,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "ulos_colors_for_ensiklopedia")
-public class UlosColorEnsiklopedia {
+@Table(name = "colors")
+public class Color {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +25,6 @@ public class UlosColorEnsiklopedia {
     private String color;
 
     @ManyToMany(mappedBy = "colors")
-    private Set<UlosEnsiklopedia> ulos = new HashSet<>();
+    private List<Ulos> ulos;
 
 }
