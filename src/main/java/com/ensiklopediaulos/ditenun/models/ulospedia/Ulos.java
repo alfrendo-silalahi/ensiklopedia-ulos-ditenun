@@ -1,11 +1,9 @@
-package com.ensiklopediaulos.ditenun.models.ensiklopedia;
+package com.ensiklopediaulos.ditenun.models.ulospedia;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Setter
 @Getter
