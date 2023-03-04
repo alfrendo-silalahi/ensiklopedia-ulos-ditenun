@@ -38,7 +38,7 @@ public class UlosController {
     /**
      * end point create ulos data
      */
-    @PostMapping(path = "/data/{uuid}")
+    @PutMapping(path = "/data/{uuid}")
     public ResponseEntity<BaseResponse<UlosResponse>> createUlosData(
             @PathVariable(name = "uuid") String uuid,
             @RequestBody UlosRequest ulosRequest) {

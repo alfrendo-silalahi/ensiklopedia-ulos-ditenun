@@ -14,9 +14,9 @@ public class SpringDocConfig {
     public OpenAPI baseOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Ensiklopedia Ulos DiTenun")
+                        .title("Ulospedia DiTenun")
                         .version("1.0.0")
-                        .description("API Documentation for Ensiklopedia Ulos DiTenun"));
+                        .description("API Documentation for Ulospedia DiTenun"));
     }
 
 }
