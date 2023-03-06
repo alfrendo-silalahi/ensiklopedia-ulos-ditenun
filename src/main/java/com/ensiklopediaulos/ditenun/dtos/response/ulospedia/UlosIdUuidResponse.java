@@ -1,4 +1,4 @@
-package com.ensiklopediaulos.ditenun.dtos.response;
+package com.ensiklopediaulos.ditenun.dtos.response.ulospedia;
 
 import lombok.Data;
 

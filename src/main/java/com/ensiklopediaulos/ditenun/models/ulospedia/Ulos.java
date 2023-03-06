@@ -3,6 +3,7 @@ package com.ensiklopediaulos.ditenun.models.ulospedia;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -46,19 +47,22 @@ public class Ulos {
     @Column(name = "technique")
     private String technique;
 
-    @Column(name = "meaning")
+    @Column(name = "meaning", columnDefinition = "TEXT")
     private String meaning;
 
     @Column(name = "func", columnDefinition = "TEXT")
     private String func;
 
-    @Column(name = "history", columnDefinition = "TEXT")
-    private String history;
+    @OneToMany(mappedBy = "ulos")
+    private List<Product> products = new ArrayList<>();
 
-    @Column(name = "available_in_ecommerce")
-    private Boolean availableInEcommerce;
+    @Column(name = "main_image_reference")
+    private String mainImageReference;
 
-    @Column(name = "link_to_ecommerce")
-    private String linkToEcommerce;
+//    @Column(name = "available_in_ecommerce")
+//    private Boolean availableInEcommerce;
+//
+//    @Column(name = "link_to_ecommerce")
+//    private String linkToEcommerce;
 
 }

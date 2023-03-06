@@ -1,9 +1,8 @@
-package com.ensiklopediaulos.ditenun.dtos.request;
+package com.ensiklopediaulos.ditenun.dtos.request.ulospedia;
 
 import lombok.Data;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 public class UlosRequest {
@@ -26,8 +25,8 @@ public class UlosRequest {
 
     private String history;
 
-    private Boolean availableInEcommerce;
-
-    private String linkToEcommerce;
+//    private Boolean availableInEcommerce;
+//
+//    private String linkToEcommerce;
 
 }

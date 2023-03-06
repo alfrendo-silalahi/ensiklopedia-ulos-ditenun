@@ -1,11 +1,15 @@
-package com.ensiklopediaulos.ditenun.dtos.response;
+package com.ensiklopediaulos.ditenun.dtos.response.ulospedia;
 
-import com.ensiklopediaulos.ditenun.dtos.request.UlosSize;
-import lombok.Data;
+import com.ensiklopediaulos.ditenun.dtos.request.ulospedia.UlosSize;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
-@Data
+@Setter
+@Getter
+@ToString
 public class UlosResponse {
 
     private Long id;
@@ -28,10 +32,8 @@ public class UlosResponse {
 
     private String func;
 
-    private String history;
-
-    private Boolean availableInEcommerce;
-
-    private String linkToEcommerce;
+//    private Boolean availableInEcommerce;
+//
+//    private String linkToEcommerce;
 
 }

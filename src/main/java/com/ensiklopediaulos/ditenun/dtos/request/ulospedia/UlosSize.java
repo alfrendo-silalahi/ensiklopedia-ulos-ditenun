@@ -1,4 +1,4 @@
-package com.ensiklopediaulos.ditenun.dtos.request;
+package com.ensiklopediaulos.ditenun.dtos.request.ulospedia;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

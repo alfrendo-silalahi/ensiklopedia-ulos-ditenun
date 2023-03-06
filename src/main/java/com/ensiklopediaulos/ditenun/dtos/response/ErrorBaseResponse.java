@@ -1,15 +1,15 @@
 package com.ensiklopediaulos.ditenun.dtos.response;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class BaseResponse<T> {
+@Setter
+@Getter
+public class ErrorBaseResponse {
 
     private Integer code;
 
     private String status;
-
-    private T data;
 
     private String message;
 
