@@ -186,7 +186,7 @@ public class UlosService {
         var newFormatCurrentProjectDirectory = String.join("\\", currentProjectDirectory.split("/"));
         log.trace(newFormatCurrentProjectDirectory);
 
-        var ulosMainImagePath = "\\src\\main\\resources\\static\\images\\ulospedia\\ulos\\main-image\\";
+        var ulosMainImagePath = "\\src\\main\\resources\\static\\images\\ulospedia\\ulos\\main-images\\";
 
         mainImage
                 .transferTo(new File(newFormatCurrentProjectDirectory + ulosMainImagePath + updatedUlos.getMainImageReference()));
