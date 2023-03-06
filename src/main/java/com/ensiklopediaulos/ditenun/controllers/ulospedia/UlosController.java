@@ -62,7 +62,7 @@ public class UlosController {
     /**
      * end point create ulos main image
      */
-    @PutMapping(path = "/main-image/{uuid}")
+    @PutMapping(path = "/main-image/{uuid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessBaseResponse<UlosMainImageResponse>> updateUlosMainImage(
             @RequestParam(name = "main-image") MultipartFile mainImage,
             @PathVariable(name = "uuid") String uuid) throws IOException {
