@@ -13,8 +13,8 @@ import com.ensiklopediaulos.ditenun.repositories.ulospedia.UlosRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,11 +27,14 @@ import java.util.*;
 @Service
 public class UlosService {
 
+    private final ResourceLoader resourceLoader;
+
     private final UlosRepository ulosRepository;
 
     private final ColorRepository colorRepository;
 
-    public UlosService(UlosRepository ulosRepository, ColorRepository colorRepository) {
+    public UlosService(ResourceLoader resourceLoader, UlosRepository ulosRepository, ColorRepository colorRepository) {
+        this.resourceLoader = resourceLoader;
         this.ulosRepository = ulosRepository;
         this.colorRepository = colorRepository;
     }
@@ -202,11 +205,15 @@ public class UlosService {
     /**
      * get ulos main image
      */
-    public byte[] getUlosMainImage(String uuid) throws IOException {
+    public Resource getUlosMainImage(String uuid) throws IOException {
         var ulos = findUlosByUuid(uuid);
-        InputStream response = getClass().getResourceAsStream("/static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference());
-        log.trace(String.valueOf(response != null));
-        return IOUtils.toByteArray(response);
+//        InputStream response = getClass().getResourceAsStream("/static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference());
+//        log.trace(String.valueOf(response != null));
+//        return IOUtils.toByteArray(response);
+
+        Resource imageResource =
+                resourceLoader.getResource("classpath:static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference());
+        return imageResource;
     }
 
 }
