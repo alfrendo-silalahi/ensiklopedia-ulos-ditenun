@@ -16,11 +16,15 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Slf4j
@@ -205,15 +209,47 @@ public class UlosService {
     /**
      * get ulos main image
      */
-    public Resource getUlosMainImage(String uuid) throws IOException {
+    public byte[] getUlosMainImage(String uuid) throws IOException {
         var ulos = findUlosByUuid(uuid);
 //        InputStream response = getClass().getResourceAsStream("/static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference());
 //        log.trace(String.valueOf(response != null));
 //        return IOUtils.toByteArray(response);
+//        File file = resourceLoader.getResource("classpath:static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference()).getFile();
 
-        Resource imageResource =
-                resourceLoader.getResource("classpath:static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference());
-        return imageResource;
+        var currentProjectDirectory = System.getProperty("user.dir");
+        log.trace(currentProjectDirectory);
+
+        var newFormatCurrentProjectDirectory = String.join("\\", currentProjectDirectory.split("/"));
+        log.trace(newFormatCurrentProjectDirectory);
+
+        var ulosMainImagePath = "\\src\\main\\resources\\static\\images\\ulospedia\\ulos\\main-images\\";
+
+        File file = new File(newFormatCurrentProjectDirectory +  ulosMainImagePath + ulos.getMainImageReference());
+
+        return FileCopyUtils.copyToByteArray(file);
+        // harus reload terlebih dahulu
+//        Resource imageResource =
+//                resourceLoader.getResource("classpath:static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference());
+//        return imageResource;
+    }
+
+    public String uploadImage(String path, MultipartFile file) throws IOException {
+        // file name
+        String name = file.getOriginalFilename();
+
+        // full path
+        String filePath = path + File.separator + name;
+
+        // create folder if not created
+        File f = new File(path);
+        if (f.exists()) {
+            f.mkdir();
+        }
+
+        // file copy
+        Files.copy(file.getInputStream(), Paths.get(filePath));
+
+        return name;
     }
 
 }

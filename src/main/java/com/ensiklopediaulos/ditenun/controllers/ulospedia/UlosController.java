@@ -6,7 +6,6 @@ import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosIdUuidResponse;
 import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosMainImageResponse;
 import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosResponse;
 import com.ensiklopediaulos.ditenun.services.ulospedia.UlosService;
-import org.apache.coyote.Response;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -81,16 +80,9 @@ public class UlosController {
     /**
      * end point get ulos main image
      */
-//    @GetMapping(path = "/main-image/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
-//    public @ResponseBody byte[] getUlosMainImage(@PathVariable(name = "uuid") String uuid) throws IOException {
-//        return ulosService.getUlosMainImage(uuid);
-//    }
-    @GetMapping(path = "/main-image/{uuid}")
-    public ResponseEntity<Resource> getUlosMainImage(@PathVariable String uuid) throws IOException {
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(ulosService.getUlosMainImage(uuid));
+    @GetMapping(path = "/main-image/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public byte[] getUlosMainImage(@PathVariable(name = "uuid") String uuid) throws IOException {
+        return ulosService.getUlosMainImage(uuid);
     }
 
 
@@ -98,5 +90,7 @@ public class UlosController {
      * end point create list of ulos images
      */
     // @PostMapping(path = "/images")
+
+
 
 }
