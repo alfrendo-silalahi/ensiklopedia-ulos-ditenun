@@ -204,8 +204,8 @@ public class UlosService {
      */
     public byte[] getUlosMainImage(String uuid) throws IOException {
         var ulos = findUlosByUuid(uuid);
-//        Resource resource = new PathResource("static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference());
         InputStream response = getClass().getResourceAsStream("/static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference());
+        log.trace(String.valueOf(response != null));
         return IOUtils.toByteArray(response);
     }
 
