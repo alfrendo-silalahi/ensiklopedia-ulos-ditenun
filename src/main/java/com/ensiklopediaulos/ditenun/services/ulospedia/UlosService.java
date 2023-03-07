@@ -1,5 +1,6 @@
 package com.ensiklopediaulos.ditenun.services.ulospedia;
 
+import static com.ensiklopediaulos.ditenun.utils.GlobalConstant.*;
 import com.ensiklopediaulos.ditenun.dtos.request.ulospedia.UlosRequest;
 import com.ensiklopediaulos.ditenun.dtos.request.ulospedia.UlosSize;
 import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosIdUuidResponse;
@@ -12,33 +13,23 @@ import com.ensiklopediaulos.ditenun.repositories.ulospedia.ColorRepository;
 import com.ensiklopediaulos.ditenun.repositories.ulospedia.UlosRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Slf4j
 @Service
 public class UlosService {
 
-    private final ResourceLoader resourceLoader;
-
     private final UlosRepository ulosRepository;
 
     private final ColorRepository colorRepository;
 
-    public UlosService(ResourceLoader resourceLoader, UlosRepository ulosRepository, ColorRepository colorRepository) {
-        this.resourceLoader = resourceLoader;
+    public UlosService(UlosRepository ulosRepository, ColorRepository colorRepository) {
         this.ulosRepository = ulosRepository;
         this.colorRepository = colorRepository;
     }
@@ -72,10 +63,6 @@ public class UlosService {
 
         return mapUlosToUlosResponse(updatedUlos);
     }
-
-    /**
-     *
-     */
 
     /**
      * save ulos
@@ -118,8 +105,6 @@ public class UlosService {
         ulos.setTechnique(ulosRequest.getTechnique());
         ulos.setMeaning(ulosRequest.getMeaning());
         ulos.setFunc(ulosRequest.getFunc());
-//        ulos.setAvailableInEcommerce(ulosRequest.getAvailableInEcommerce());
-//        ulos.setLinkToEcommerce(ulosRequest.getLinkToEcommerce());
 
         List<Color> colors = new ArrayList<>();
         for (var id : ulosRequest.getColors()) {
@@ -152,8 +137,6 @@ public class UlosService {
         ulosResponse.setTechnique(ulos.getTechnique());
         ulosResponse.setMeaning(ulos.getMeaning());
         ulosResponse.setFunc(ulos.getFunc());
-//        ulosResponse.setAvailableInEcommerce(ulos.getAvailableInEcommerce());
-//        ulosResponse.setLinkToEcommerce(ulos.getLinkToEcommerce());
 
         List<String> listOfColors = new ArrayList<>();
         for (var color : ulos.getColors()) {
@@ -182,23 +165,21 @@ public class UlosService {
      * update ulos main image
      */
     public UlosMainImageResponse updateUlosMainImage(String uuid, MultipartFile mainImage) throws IOException {
-        var ulos = findUlosByUuid(uuid);
+        Ulos ulos = findUlosByUuid(uuid);
 
+        // delete existing main-image
+        File fileToDelete = new File(NEW_FORMAT_CURRENT_PROJECT_DIRECTORY + ULOS_MAIN_IMAGES_PATH + ulos.getMainImageReference());
+        fileToDelete.delete();
+
+        // update main-image reference
         ulos.setMainImageReference(UUID.randomUUID() + mainImage.getOriginalFilename());
-        var updatedUlos = ulosRepository.save(ulos);
+        Ulos updatedUlos = ulosRepository.save(ulos);
 
-        var currentProjectDirectory = System.getProperty("user.dir");
-        log.trace(currentProjectDirectory);
+        // save to new main-image to local folder
+        File file = new File(NEW_FORMAT_CURRENT_PROJECT_DIRECTORY + ULOS_MAIN_IMAGES_PATH + updatedUlos.getMainImageReference());
+        mainImage.transferTo(file);
 
-        var newFormatCurrentProjectDirectory = String.join("\\", currentProjectDirectory.split("/"));
-        log.trace(newFormatCurrentProjectDirectory);
-
-        var ulosMainImagePath = "\\src\\main\\resources\\static\\images\\ulospedia\\ulos\\main-images\\";
-
-        mainImage
-                .transferTo(new File(newFormatCurrentProjectDirectory + ulosMainImagePath + updatedUlos.getMainImageReference()));
-
-        var response = new UlosMainImageResponse();
+        UlosMainImageResponse response = new UlosMainImageResponse();
         response.setId(updatedUlos.getId());
         response.setUuid(updatedUlos.getUuid());
         response.setMainImageReference(updatedUlos.getMainImageReference());
@@ -210,48 +191,9 @@ public class UlosService {
      * get ulos main image
      */
     public byte[] getUlosMainImage(String uuid) throws IOException {
-        var ulos = findUlosByUuid(uuid);
-//        InputStream response = getClass().getResourceAsStream("/static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference());
-//        log.trace(String.valueOf(response != null));
-//        return IOUtils.toByteArray(response);
-//        File file = resourceLoader.getResource("classpath:static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference()).getFile();
-
-        var currentProjectDirectory = System.getProperty("user.dir");
-        log.trace(currentProjectDirectory);
-
-        var newFormatCurrentProjectDirectory = String.join("\\", currentProjectDirectory.split("/"));
-        log.trace(newFormatCurrentProjectDirectory);
-
-        var ulosMainImagePath = "\\src\\main\\resources\\static\\images\\ulospedia\\ulos\\main-images\\";
-
-        File file = new File(newFormatCurrentProjectDirectory +  ulosMainImagePath + ulos.getMainImageReference());
-
+        Ulos ulos = findUlosByUuid(uuid);
+        File file = new File(NEW_FORMAT_CURRENT_PROJECT_DIRECTORY +  ULOS_MAIN_IMAGES_PATH + ulos.getMainImageReference());
         return FileCopyUtils.copyToByteArray(file);
-        // harus reload terlebih dahulu
-//        Resource imageResource =
-//                resourceLoader.getResource("classpath:static/images/ulospedia/ulos/main-images/" + ulos.getMainImageReference());
-//        return imageResource;
-    }
-
-    public String uploadImage(String path, MultipartFile file) throws IOException {
-        // file name
-        String name = file.getOriginalFilename();
-
-        // full path
-        String filePath = path + File.separator + name;
-
-        // create folder if not created
-        File f = new File(path);
-        if (f.exists()) {
-            f.mkdir();
-        }
-
-        // file copy
-        Files.copy(file.getInputStream(), Paths.get(filePath));
-
-        return name;
     }
 
 }
-
-// jTenun2018
