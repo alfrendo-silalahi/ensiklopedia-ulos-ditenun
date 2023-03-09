@@ -5,12 +5,12 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ErrorBaseResponse {
+public class ErrorBaseResponse<T> {
 
     private Integer code;
 
     private String status;
 
-    private String message;
+    private T message;
 
 }

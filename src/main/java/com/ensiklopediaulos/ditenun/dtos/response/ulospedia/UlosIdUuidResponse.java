@@ -1,11 +1,11 @@
 package com.ensiklopediaulos.ditenun.dtos.response.ulospedia;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class UlosIdUuidResponse {
-
-    private Long id;
 
     private String uuid;
 

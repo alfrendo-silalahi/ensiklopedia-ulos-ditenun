@@ -1,13 +1,15 @@
-package com.ensiklopediaulos.ditenun.dtos.request.ulospedia;
+package com.ensiklopediaulos.ditenun.dtos.response.ulospedia;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UlosSize {
+public class UlosSizeResponse {
 
     private Double length;
 

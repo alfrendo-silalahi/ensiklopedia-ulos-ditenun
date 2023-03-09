@@ -1,12 +1,14 @@
 package com.ensiklopediaulos.ditenun.controllers.ulospedia;
 
-import com.ensiklopediaulos.ditenun.dtos.request.ulospedia.UlosRequest;
+import com.ensiklopediaulos.ditenun.dtos.request.ulospedia.UlosTextDataRequest;
 import com.ensiklopediaulos.ditenun.dtos.response.SuccessBaseResponse;
 import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosIdUuidResponse;
 import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosMainImageResponse;
-import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosResponse;
+import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosTextDataResponse;
 import com.ensiklopediaulos.ditenun.services.ulospedia.UlosService;
-import org.springframework.core.io.Resource;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+import org.apache.tomcat.util.json.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,10 @@ public class UlosController {
      * end point get new ulos id and uuid
      */
     @PostMapping(path = "/id-uuid")
+    @Operation(
+            summary = "GENERATE NEW ULOS ID AND UUID",
+            description = "test test test"
+    )
     public ResponseEntity<SuccessBaseResponse<UlosIdUuidResponse>> generateUlosIdUuid() {
         UlosIdUuidResponse data = ulosService.getUlosIdUuid();
 
@@ -45,12 +51,12 @@ public class UlosController {
      * end point update ulos text-data
      */
     @PutMapping(path = "/text-data/{uuid}")
-    public ResponseEntity<SuccessBaseResponse<UlosResponse>> updateUlosTextData(
+    public ResponseEntity<SuccessBaseResponse<UlosTextDataResponse>> updateUlosTextData(
             @PathVariable(name = "uuid") String uuid,
-            @RequestBody UlosRequest ulosRequest) {
-        UlosResponse data = ulosService.updateUlosTextData(uuid, ulosRequest);
+            @Valid @RequestBody UlosTextDataRequest ulosRequest) {
+        UlosTextDataResponse data = ulosService.updateUlosTextData(uuid, ulosRequest);
 
-        SuccessBaseResponse<UlosResponse> response = new SuccessBaseResponse<>();
+        SuccessBaseResponse<UlosTextDataResponse> response = new SuccessBaseResponse<>();
         response.setCode(HttpStatus.OK.value());
         response.setStatus("success");
         response.setData(data);
@@ -66,7 +72,7 @@ public class UlosController {
     public ResponseEntity<SuccessBaseResponse<UlosMainImageResponse>> updateUlosMainImage(
             @RequestParam(name = "main-image") MultipartFile mainImage,
             @PathVariable(name = "uuid") String uuid) throws IOException {
-        UlosMainImageResponse data = ulosService.updateUlosMainImage(uuid, mainImage);
+        UlosMainImageResponse data = ulosService.createAndUpdateUlosMainImage(uuid, mainImage);
 
         SuccessBaseResponse<UlosMainImageResponse> response = new SuccessBaseResponse<>();
         response.setCode(HttpStatus.OK.value());
@@ -91,6 +97,28 @@ public class UlosController {
      */
     // @PostMapping(path = "/images")
 
+    /**
+     * end point get ulos total count
+     */
+    @GetMapping(path = "/count")
+    public ResponseEntity<SuccessBaseResponse<Long>> getUlosTotalCount() {
+        Long data = ulosService.getUlosTotalCount();
 
+        SuccessBaseResponse<Long> response = new SuccessBaseResponse<>();
+        response.setCode(HttpStatus.OK.value());
+        response.setStatus("success");
+        response.setData(data);
+        response.setMessage("ulos total count retrieved successfully");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * end point save product data that relate to ulos
+     */
+    @PutMapping(path = "/products")
+    public void saveProducts() throws ParseException, org.json.simple.parser.ParseException {
+        ulosService.saveProduct("{\"products\": [{\"name\": \"A\",\"address\": \"B\"},{\"name\": \"C\",\"address\": \"D\"}]}");
+    }
 
 }

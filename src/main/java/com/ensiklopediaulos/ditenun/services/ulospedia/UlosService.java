@@ -1,25 +1,35 @@
 package com.ensiklopediaulos.ditenun.services.ulospedia;
 
-import static com.ensiklopediaulos.ditenun.utils.GlobalConstant.*;
-import com.ensiklopediaulos.ditenun.dtos.request.ulospedia.UlosRequest;
-import com.ensiklopediaulos.ditenun.dtos.request.ulospedia.UlosSize;
+import com.ensiklopediaulos.ditenun.dtos.request.ulospedia.UlosTextDataRequest;
 import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosIdUuidResponse;
 import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosMainImageResponse;
-import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosResponse;
+import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosSizeResponse;
+import com.ensiklopediaulos.ditenun.dtos.response.ulospedia.UlosTextDataResponse;
 import com.ensiklopediaulos.ditenun.exceptions.ResourceNotFoundException;
 import com.ensiklopediaulos.ditenun.models.ulospedia.Color;
+import com.ensiklopediaulos.ditenun.models.ulospedia.Product;
 import com.ensiklopediaulos.ditenun.models.ulospedia.Ulos;
 import com.ensiklopediaulos.ditenun.repositories.ulospedia.ColorRepository;
 import com.ensiklopediaulos.ditenun.repositories.ulospedia.UlosRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.json.ParseException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static com.ensiklopediaulos.ditenun.utils.GlobalConstant.NEW_FORMAT_CURRENT_PROJECT_DIRECTORY;
+import static com.ensiklopediaulos.ditenun.utils.GlobalConstant.ULOS_MAIN_IMAGES_PATH;
 
 @Slf4j
 @Service
@@ -38,14 +48,11 @@ public class UlosService {
      * create ulos id and uuid
      */
     public UlosIdUuidResponse getUlosIdUuid() {
-        var ulos = new Ulos();
+        Ulos ulos = new Ulos();
         ulos.setUuid(UUID.randomUUID().toString());
         Ulos newUlos = saveUlos(ulos);
 
-        log.trace(String.format("getUlosIdUuid() -> id {%s} | uuid {%s}", newUlos.getId(), ulos.getUuid()));
-
-        var ulosIdUuidResponse = new UlosIdUuidResponse();
-        ulosIdUuidResponse.setId(newUlos.getId());
+        UlosIdUuidResponse ulosIdUuidResponse = new UlosIdUuidResponse();
         ulosIdUuidResponse.setUuid(newUlos.getUuid());
         return ulosIdUuidResponse;
     }
@@ -53,13 +60,11 @@ public class UlosService {
     /**
      * update ulos text-data
      */
-    public UlosResponse updateUlosTextData(String uuid, UlosRequest ulosRequest) {
-        var ulos = findUlosByUuid(uuid);
+    public UlosTextDataResponse updateUlosTextData(String uuid, UlosTextDataRequest ulosRequest) {
+        Ulos ulos = findUlosByUuid(uuid);
         mapUlosRequestToUlos(ulos, ulosRequest);
-        log.trace("updateUlosData() : ulos before save to db -> " + ulos);
 
-        var updatedUlos = saveUlos(ulos);
-        log.trace("updateUlosData() : updated ulos -> " + updatedUlos);
+        Ulos updatedUlos = saveUlos(ulos);
 
         return mapUlosToUlosResponse(updatedUlos);
     }
@@ -96,7 +101,7 @@ public class UlosService {
     /**
      * mapping ulos-request -> ulos-model
      */
-    private void mapUlosRequestToUlos(Ulos ulos, UlosRequest ulosRequest) {
+    private void mapUlosRequestToUlos(Ulos ulos, UlosTextDataRequest ulosRequest) {
         ulos.setName(ulosRequest.getName());
         ulos.setEthnic(ulosRequest.getEthnic());
         ulos.setLocation(ulosRequest.getLocation());
@@ -107,13 +112,13 @@ public class UlosService {
         ulos.setFunc(ulosRequest.getFunc());
 
         List<Color> colors = new ArrayList<>();
-        for (var id : ulosRequest.getColors()) {
+        for (Long id : ulosRequest.getColors()) {
             var color = findColorById(id);
             colors.add(color);
         }
         ulos.setColors(colors);
 
-        for (var id : ulosRequest.getColors()) {
+        for (Long id : ulosRequest.getColors()) {
             var color = findColorById(id);
             color.getUlos().add(ulos);
             colorRepository.save(color);
@@ -123,28 +128,24 @@ public class UlosService {
     /**
      * mapping ulos-model -> ulos-response
      */
-    private UlosResponse mapUlosToUlosResponse(Ulos ulos) {
-        log.trace("mapUlosToUlosResponse() : ulos from param -> " + ulos);
+    private UlosTextDataResponse mapUlosToUlosResponse(Ulos ulos) {
+        UlosTextDataResponse ulosResponse = new UlosTextDataResponse();
 
-        var ulosResponse = new UlosResponse();
-
-        ulosResponse.setId(ulos.getId());
         ulosResponse.setUuid(ulos.getUuid());
         ulosResponse.setName(ulos.getName());
         ulosResponse.setEthnic(ulos.getEthnic());
         ulosResponse.setLocation(ulos.getLocation());
-        ulosResponse.setSize(new UlosSize(ulos.getLength(), ulos.getWidth()));
+        ulosResponse.setSize(new UlosSizeResponse(ulos.getLength(), ulos.getWidth()));
         ulosResponse.setTechnique(ulos.getTechnique());
         ulosResponse.setMeaning(ulos.getMeaning());
         ulosResponse.setFunc(ulos.getFunc());
 
         List<String> listOfColors = new ArrayList<>();
-        for (var color : ulos.getColors()) {
+        for (Color color : ulos.getColors()) {
             listOfColors.add(color.getColor());
         }
         ulosResponse.setColors(listOfColors);
 
-        log.trace("mapUlosToUlosResponse() : ulos response -> " + ulosResponse);
         return ulosResponse;
     }
 
@@ -164,7 +165,7 @@ public class UlosService {
     /**
      * update ulos main image
      */
-    public UlosMainImageResponse updateUlosMainImage(String uuid, MultipartFile mainImage) throws IOException {
+    public UlosMainImageResponse createAndUpdateUlosMainImage(String uuid, MultipartFile mainImage) throws IOException {
         Ulos ulos = findUlosByUuid(uuid);
 
         // delete existing main-image
@@ -180,7 +181,6 @@ public class UlosService {
         mainImage.transferTo(file);
 
         UlosMainImageResponse response = new UlosMainImageResponse();
-        response.setId(updatedUlos.getId());
         response.setUuid(updatedUlos.getUuid());
         response.setMainImageReference(updatedUlos.getMainImageReference());
 
@@ -194,6 +194,29 @@ public class UlosService {
         Ulos ulos = findUlosByUuid(uuid);
         File file = new File(NEW_FORMAT_CURRENT_PROJECT_DIRECTORY +  ULOS_MAIN_IMAGES_PATH + ulos.getMainImageReference());
         return FileCopyUtils.copyToByteArray(file);
+    }
+
+    /**
+     * get ulos total count
+     */
+    public Long getUlosTotalCount() {
+        return ulosRepository.count();
+    }
+
+    /**
+     * save product data that relate to ulos
+     */
+    public void saveProduct(String json) throws ParseException, org.json.simple.parser.ParseException {
+        JSONParser parser = new JSONParser();
+        JSONObject j = (JSONObject) parser.parse(json);
+        JSONArray products = (JSONArray) j.get("products");
+        for (int i = 0; i < products.size(); i++) {
+            JSONObject JSONproduct = (JSONObject) products.get(i);
+            Product product = new Product();
+            product.setName((String) JSONproduct.get("name"));
+        }
+        System.out.println(products);
+
     }
 
 }

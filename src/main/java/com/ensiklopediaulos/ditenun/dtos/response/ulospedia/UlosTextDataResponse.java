@@ -1,6 +1,5 @@
 package com.ensiklopediaulos.ditenun.dtos.response.ulospedia;
 
-import com.ensiklopediaulos.ditenun.dtos.request.ulospedia.UlosSize;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,9 +9,7 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-public class UlosResponse {
-
-    private Long id;
+public class UlosTextDataResponse {
 
     private String uuid;
 
@@ -24,7 +21,7 @@ public class UlosResponse {
 
     private List<String> colors;
 
-    private UlosSize size;
+    private UlosSizeResponse size;
 
     private String technique;
 

@@ -58,6 +58,10 @@ public class Ulos {
 
     @Column(name = "main_image_reference")
     private String mainImageReference;
+//
+//    @Column(name = "available_to_ecommerce")
+//    private String availableToEcommerce;
+
 
 //    @Column(name = "available_in_ecommerce")
 //    private Boolean availableInEcommerce;

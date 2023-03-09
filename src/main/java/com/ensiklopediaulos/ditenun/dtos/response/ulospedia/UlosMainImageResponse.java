@@ -7,8 +7,6 @@ import lombok.Setter;
 @Getter
 public class UlosMainImageResponse {
 
-    private Long id;
-
     private String uuid;
 
     private String mainImageReference;
