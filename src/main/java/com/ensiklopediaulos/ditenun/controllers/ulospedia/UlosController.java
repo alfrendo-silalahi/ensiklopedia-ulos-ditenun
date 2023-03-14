@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/api/v1/ulospedia/ulos")
@@ -23,17 +25,20 @@ public class UlosController {
 
     private final UlosService ulosService;
 
+    private final Map<String, Object> dataObj = new HashMap<>();
+
     public UlosController(UlosService ulosService) {
         this.ulosService = ulosService;
     }
 
     /**
      * end point get new ulos id and uuid
+     * deprecated
      */
-    @PostMapping(path = "/id-uuid")
+    @Deprecated(forRemoval = true)
+    @PostMapping(path = "/id-uuid/deprecated")
     @Operation(
-            summary = "GENERATE NEW ULOS ID AND UUID",
-            description = "test test test"
+            summary = "GENERATE NEW ULOS ID AND UUID"
     )
     public ResponseEntity<SuccessBaseResponse<UlosIdUuidResponse>> generateUlosIdUuid() {
         UlosIdUuidResponse data = ulosService.getUlosIdUuid();
@@ -49,8 +54,11 @@ public class UlosController {
 
     /**
      * end point update ulos text-data
+     * deprecated
      */
-    @PutMapping(path = "/text-data/{uuid}")
+    @Deprecated(forRemoval = true)
+    @PutMapping(path = "/text-data/{uuid}/deprecated")
+    @Operation(summary = "UPDATE ULOS TEXT DATA")
     public ResponseEntity<SuccessBaseResponse<UlosTextDataResponse>> updateUlosTextData(
             @PathVariable(name = "uuid") String uuid,
             @Valid @RequestBody UlosTextDataRequest ulosRequest) {
@@ -66,9 +74,30 @@ public class UlosController {
     }
 
     /**
+     * end point create ulos text data
+     */
+    @PostMapping(path = "/text-data")
+    @Operation(summary = "CREATE ULOS TEXT DATA")
+    public ResponseEntity<SuccessBaseResponse<Map<String, Object>>> createUlosTextData(@Valid @RequestBody UlosTextDataRequest ulosTextDataRequest) {
+        UlosTextDataResponse data = ulosService.createUlosTextData(ulosTextDataRequest);
+
+        SuccessBaseResponse<Map<String, Object>> response = new SuccessBaseResponse<>();
+        response.setCode(HttpStatus.OK.value());
+        response.setStatus("success");
+
+        dataObj.clear();
+        dataObj.put("ulosTextData", data);
+        response.setData(dataObj);
+
+        response.setMessage("ulos id, uuid, and text data successfully added");
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    /**
      * end point create ulos main image
      */
-    @PutMapping(path = "/main-image/{uuid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(path = "/{uuid}/main-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "UPDATE MAIN IMAGE")
     public ResponseEntity<SuccessBaseResponse<UlosMainImageResponse>> updateUlosMainImage(
             @RequestParam(name = "main-image") MultipartFile mainImage,
             @PathVariable(name = "uuid") String uuid) throws IOException {
@@ -86,28 +115,28 @@ public class UlosController {
     /**
      * end point get ulos main image
      */
-    @GetMapping(path = "/main-image/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(path = "/{uuid}/main-image", produces = MediaType.IMAGE_JPEG_VALUE)
+    @Operation(summary = "GET ULOS MAIN IMAGE")
     public byte[] getUlosMainImage(@PathVariable(name = "uuid") String uuid) throws IOException {
         return ulosService.getUlosMainImage(uuid);
     }
-
-
-    /**
-     * end point create list of ulos images
-     */
-    // @PostMapping(path = "/images")
 
     /**
      * end point get ulos total count
      */
     @GetMapping(path = "/count")
-    public ResponseEntity<SuccessBaseResponse<Long>> getUlosTotalCount() {
+    @Operation(summary = "GET ULOS TOTAL COUNT")
+    public ResponseEntity<SuccessBaseResponse<Map<String, Object>>> getUlosTotalCount() {
         Long data = ulosService.getUlosTotalCount();
 
-        SuccessBaseResponse<Long> response = new SuccessBaseResponse<>();
+        SuccessBaseResponse<Map<String, Object>> response = new SuccessBaseResponse<>();
         response.setCode(HttpStatus.OK.value());
         response.setStatus("success");
-        response.setData(data);
+
+        dataObj.clear();
+        dataObj.put("totalUlos", data);
+        response.setData(dataObj);
+
         response.setMessage("ulos total count retrieved successfully");
 
         return new ResponseEntity<>(response, HttpStatus.OK);

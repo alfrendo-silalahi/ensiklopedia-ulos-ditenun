@@ -3,7 +3,9 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-src/main/resources/static/
+src/main/resources/static/images/generate-motive/
+src/main/resources/static/images/ulospedia/ulos/main-images/
+src/main/resources/static/images/ulospedia/weaver
 
 ### STS ###
 .apt_generated

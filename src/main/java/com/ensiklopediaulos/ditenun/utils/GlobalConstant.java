@@ -8,6 +8,8 @@ public class GlobalConstant {
 
     public static String ULOS_MAIN_IMAGES_PATH = "\\src\\main\\resources\\static\\images\\ulospedia\\ulos\\main-images\\";
 
+    public static String WEAVER_IMAGES = "\\src\\main\\resources\\static\\images\\ulospedia\\weaver\\";
+
     public static String ULOS_IMAGES_PATH = "\\src\\main\\resources\\static\\images\\ensiklopedia\\ulos\\";
 
     public static String ULOS_CUT_IMAGES_PATH = "\\src\\main\\resources\\static\\images\\ensiklopedia\\ulos-cut\\";

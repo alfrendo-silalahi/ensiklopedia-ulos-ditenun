@@ -46,6 +46,7 @@ public class UlosService {
 
     /**
      * create ulos id and uuid
+     * deprecated
      */
     public UlosIdUuidResponse getUlosIdUuid() {
         Ulos ulos = new Ulos();
@@ -59,6 +60,7 @@ public class UlosService {
 
     /**
      * update ulos text-data
+     * deprecated
      */
     public UlosTextDataResponse updateUlosTextData(String uuid, UlosTextDataRequest ulosRequest) {
         Ulos ulos = findUlosByUuid(uuid);
@@ -67,6 +69,19 @@ public class UlosService {
         Ulos updatedUlos = saveUlos(ulos);
 
         return mapUlosToUlosResponse(updatedUlos);
+    }
+
+    /**
+     * create ulos text-data
+     */
+    public UlosTextDataResponse createUlosTextData(UlosTextDataRequest ulosTextDataRequest) {
+        Ulos ulos = new Ulos();
+        mapUlosRequestToUlos(ulos, ulosTextDataRequest);
+        ulos.setUuid(UUID.randomUUID().toString());
+
+        Ulos newUlos = saveUlos(ulos);
+
+        return mapUlosToUlosResponse(newUlos);
     }
 
     /**
